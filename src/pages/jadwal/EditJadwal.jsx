@@ -16,7 +16,7 @@ function EditJadwal({jadwalId, onClose, onUpdated}) {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          `${process.env.VITE_API_URL}api/jadwal/${jadwalId}`,
+          `${import.meta.env.VITE_API_URL}api/jadwal/${jadwalId}`,
           {headers: {Authorization: `Bearer ${token}`}}
         );
         setJadwal(res.data);
@@ -38,7 +38,7 @@ function EditJadwal({jadwalId, onClose, onUpdated}) {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `${process.env.VITE_API_URL}api/jadwal/${jadwalId}`,
+        `${import.meta.env.VITE_API_URL}api/jadwal/${jadwalId}`,
         jadwal,
         {
           headers: {Authorization: `Bearer ${token}`},
