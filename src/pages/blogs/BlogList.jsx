@@ -9,11 +9,15 @@ const BlogListCard = () => {
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}api/blogs`);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}api/blogs`, {
+        headers: {Authorization: `Bearer ${token}`},
+      });
       setBlogs(res.data);
     } catch (err) {
-      console.error("Error fetching blogs:", err);
+      console.error("Error fetching blogs:", err.response?.data || err);
     } finally {
       setLoading(false);
     }

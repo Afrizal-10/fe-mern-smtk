@@ -20,6 +20,7 @@ const Home = () => {
     deadline: "",
     photo: null,
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -27,7 +28,7 @@ const Home = () => {
       try {
         const userObj = JSON.parse(storedUser);
         setName(userObj.name || "");
-      } catch (err) {
+      } catch {
         setName(storedUser);
       }
     }
@@ -43,16 +44,16 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("name");
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       let photoUrl = "";
-
       if (form.photo) {
         const data = new FormData();
         data.append("image", form.photo);
@@ -67,7 +68,7 @@ const Home = () => {
       }
 
       const token = localStorage.getItem("token");
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_API_URL}api/tasks`,
         {
           title: form.title,
@@ -76,9 +77,7 @@ const Home = () => {
           deadline: form.deadline,
           photoUrl,
         },
-        {
-          headers: {Authorization: `Bearer ${token}`},
-        }
+        {headers: {Authorization: `Bearer ${token}`}}
       );
 
       successAlert("Tugas berhasil ditambahkan!");
@@ -91,8 +90,11 @@ const Home = () => {
       });
       setActiveForm(null);
     } catch (error) {
-      errorAlert("Gagal menambahkan tugas");
+      const msg = error.response?.data?.message || "Gagal menambahkan tugas";
+      errorAlert(msg);
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,6 +128,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar onLogout={handleLogout} />
+
       <div className="max-w-7xl mx-auto p-4 sm:p-6 flex flex-col items-center flex-grow gap-8">
         <div className="max-w-xl text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
@@ -160,6 +163,7 @@ const Home = () => {
           ))}
         </div>
       </div>
+
       {/* Pilihan Form */}
       {activeForm === "choose" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -192,6 +196,7 @@ const Home = () => {
           </div>
         </div>
       )}
+
       {/* Form Tugas */}
       {activeForm === "addTask" && (
         <AddTask
@@ -200,8 +205,10 @@ const Home = () => {
           onFileChange={handleFileChange}
           onSubmit={handleSubmit}
           onCancel={() => setActiveForm(null)}
+          loading={loading}
         />
       )}
+
       {/* Form Blog */}
       {activeForm === "addBlog" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-auto">
@@ -216,6 +223,7 @@ const Home = () => {
           </div>
         </div>
       )}
+
       {/* Form Jadwal */}
       {activeForm === "addSchedule" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-auto">
@@ -230,7 +238,8 @@ const Home = () => {
           </div>
         </div>
       )}
-      <Footer />;
+
+      <Footer />
     </div>
   );
 };

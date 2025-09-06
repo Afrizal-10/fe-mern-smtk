@@ -38,7 +38,7 @@ const JadwalList = () => {
     if (!window.confirm("Yakin ingin menghapus jadwal ini?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/jadwal/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}api/jadwal/${id}`, {
         headers: {Authorization: `Bearer ${token}`},
       });
       setJadwals(jadwals.filter((j) => j._id !== id));

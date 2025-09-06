@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import axios from "axios";
-import Navbar from "../../components/Navbar"; // pastikan path sesuai
+import Navbar from "../../components/Navbar";
 
 export default function BlogDetail() {
   const {id} = useParams();
@@ -11,13 +11,23 @@ export default function BlogDetail() {
 
   useEffect(() => {
     const fetchBlogDetail = async () => {
+      setLoading(true);
       try {
+        const token = localStorage.getItem("token"); // ambil token
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}api/blogs/${id}`
+          `${import.meta.env.VITE_API_URL}api/blogs/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // kirim token
+            },
+          }
         );
         setBlog(res.data);
       } catch (error) {
-        console.error("Error fetching blog detail:", error);
+        console.error(
+          "Error fetching blog detail:",
+          error.response?.data || error
+        );
       } finally {
         setLoading(false);
       }

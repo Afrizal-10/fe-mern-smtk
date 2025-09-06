@@ -66,11 +66,16 @@ export default function CreateJadwal({
         jam: form.jam.trim(),
       };
 
-      const res = await axios.post(`${apiBase}api/jadwal`, payload);
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${apiBase}api/jadwal`, payload, {
+        headers: {Authorization: `Bearer ${token}`},
+      });
+
       successAlert("Jadwal berhasil dibuat.");
       setForm({hari: "", mata_kuliah: "", dosen: "", jam: ""});
       if (typeof onCreated === "function") onCreated(res.data);
     } catch (err) {
+      console.error(err);
       errorAlert(err.response?.data?.message || "Gagal membuat jadwal.");
     } finally {
       setSubmitting(false);

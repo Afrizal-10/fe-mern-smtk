@@ -31,8 +31,13 @@ const CreateBlog = ({onSuccess}) => {
       data.append("description", formData.description);
       data.append("imageUrl", formData.imageUrl);
 
+      const token = localStorage.getItem("token"); // ambil token
+
       await axios.post(`${import.meta.env.VITE_API_URL}api/blogs`, data, {
-        headers: {"Content-Type": "multipart/form-data"},
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // tambahkan token
+        },
       });
 
       setFormData({title: "", description: "", imageUrl: null});
@@ -40,7 +45,7 @@ const CreateBlog = ({onSuccess}) => {
       successAlert("Blog berhasil dibuat!");
     } catch (error) {
       console.error(error.response?.data || error);
-      errorAlert("Gagal menambahkan blog!");
+      errorAlert(error.response?.data?.message || "Gagal menambahkan blog!");
     } finally {
       setLoading(false);
     }
