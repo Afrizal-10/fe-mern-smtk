@@ -16,7 +16,7 @@ function EditJadwal({jadwalId, onClose, onUpdated}) {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/jadwal/${jadwalId}`,
+          `${process.env.REACT_APP_API_URL}api/jadwal/${jadwalId}`,
           {headers: {Authorization: `Bearer ${token}`}}
         );
         setJadwal(res.data);
@@ -37,9 +37,13 @@ function EditJadwal({jadwalId, onClose, onUpdated}) {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/jadwal/${jadwalId}`, jadwal, {
-        headers: {Authorization: `Bearer ${token}`},
-      });
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}api/jadwal/${jadwalId}`,
+        jadwal,
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        }
+      );
       successAlert("Jadwal berhasil diperbarui");
       onUpdated();
       onClose();
